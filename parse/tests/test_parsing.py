@@ -10,6 +10,7 @@ __status__ = "Development"
 """ Unit tests for faculty network parsing. """
 
 from university_network.parse.faculty_parser import parse_faculty_records
+from university_network.parse.institution_parser import parse_institution_records
 
 from StringIO import StringIO
 from unittest import TestCase, main
@@ -17,61 +18,75 @@ from unittest import TestCase, main
 def get_test_records():
     return StringIO(
 """
->>> record 1\n
-# facultyName : Joe Shmoe\n
-# email       : js@asu.edu\n
-# sex         : M\n
-# department  : Information and Computer Science\n
-# place       : Arizona State University\n
-# current     : Associate Professor\n
-# [Education]\n
-# degree      : BS\n
-# place       : Stanford University\n
-# field       : Computer Science\n
-# years       : ????-1994\n
-# [Education]\n
-# degree      : PhD\n
-# place       : Stanford University\n
-# field       : Information Technology\n
-# years       : ????-2000\n
-# [Faculty]\n
-# rank        : PostDoc\n
-# place       : Arizona State University\n
-# years       : 2000-2000\n
-# [Faculty]\n
-# rank        : Assistant Professor\n
-# place       : MIT\n
-# years       : 2000-2005\n
-# recordDate  : 9/29/2011\n
-\n
->>> record 2\n
-# facultyName : Bob Roberts\n
-# email       : br@cse.tamu.edu\n
-# sex         : M\n
-# department  : Computer Science\n
-# place       : Texas A&M\n
-# current     : Emeritus\n
-# [Education]\n
-# degree      : PhD\n
-# place       : University of New Mexico\n
-# field       : Computer and Information Sciences\n
-# years       : ????-????\n
-# [Faculty]\n
-# rank        : Full Professor\n
-# place       : Texas A&M\n
-# years       : 1996-2008\n
-# [Faculty]\n
-# rank        : Emeritus\n
-# place       : Texas A&M\n
-# years       : 2008-2011\n
-# recordDate  : 10/6/2011\n""")
+>>> record 1
+# facultyName : Joe Shmoe
+# email       : js@asu.edu
+# sex         : M
+# department  : Information and Computer Science
+# place       : Arizona State University
+# current     : Associate Professor
+# [Education]
+# degree      : BS
+# place       : Stanford University
+# field       : Computer Science
+# years       : ????-1994
+# [Education]
+# degree      : PhD
+# place       : Stanford University
+# field       : Information Technology
+# years       : ????-2000
+# [Faculty]
+# rank        : PostDoc
+# place       : Arizona State University
+# years       : 2000-2000
+# [Faculty]
+# rank        : Assistant Professor
+# place       : MIT
+# years       : 2000-2005
+# recordDate  : 9/29/2011
+
+>>> record 2
+# facultyName : Bob Roberts
+# email       : br@cse.tamu.edu
+# sex         : M
+# department  : Computer Science
+# place       : Texas A&M
+# current     : Emeritus
+# [Education]
+# degree      : PhD
+# place       : University of New Mexico
+# field       : Computer and Information Sciences
+# years       : ????-????
+# [Faculty]
+# rank        : Full Professor
+# place       : Texas A&M
+# years       : 1996-2008
+# [Faculty]
+# rank        : Emeritus
+# place       : Texas A&M
+# years       : 2008-2011
+# recordDate  : 10/6/2011""")
 
 
-class logLikelihoodTests(TestCase):
-    """ Test parsing of log-likelihood calculation. """
+def get_test_universities():
+    return StringIO(
+"""
+# u\tpi\tUSN2010\tNRC95\tRegion\tinstitution
+1\t2.23\t1\t1\tWest\tStanford University
+2\t2.31\t1\t3\tWest\tUC Berkeley
+3\t3.52\t1\t2\tNortheast\tMIT
+4\t5.24\t11\t12\tWest\tCalifornia Institute of Technology
+5\t6.12\t17\t11\tNortheast\tHarvard University
+6\t8.29\t5\t5\tNortheast\tCornell University
+7\t9.28\t1\t4\tNortheast\tCarnegie Mellon University
+8\t9.32\t8\t6\tNortheast\tPrinceton University
+9\t9.98\t20\t14\tNortheast\tYale University""")
+
+
+class parsing_tests(TestCase):
+    """ Test parsing of faculty networks. """
     def setUp(self):
        pass 
-
 
     def test_parse(self):
         X = get_test_records()
@@ -105,6 +120,14 @@ class logLikelihoodTests(TestCase):
         self.assertEqual(second_record.education[0].place, 'University of New Mexico') 
         self.assertEqual(second_record.faculty[1].rank, 'Emeritus') 
 
+    def test_uni_parse(self):
+        X = get_test_universities()
+        institutions = parse_institution_records(X)
+        self.assertEqual(institutions['Yale University'].Region, 'Northeast')
+        self.assertEqual(institutions['Princeton University'].NRC95, 6)
+        self.assertEqual(institutions['Carnegie Mellon University'].USN2010, 1)
+        self.assertEqual(institutions['Harvard University'].pi, 6.12)
+        self.assertEqual(institutions['MIT'].u, 3)
 
 if __name__ == '__main__':
     main()
