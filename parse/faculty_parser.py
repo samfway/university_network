@@ -77,7 +77,8 @@ def finalize_exp_entry(entry):
             entry['end_year'] = end_year
         except:
             entry['end_year'] = None
-    return Struct(**entry)  # convert to object
+    return entry
+    #return Struct(**entry)  # convert to object
 
 
 class faculty_record:
@@ -144,23 +145,23 @@ class faculty_record:
     def phd(self):
         """ Return location + year of PhD """
         for record in self.education:
-            if record.degree == 'PhD':
-                return record.place, record.end_year
+            if record['degree'] == 'PhD':
+                return record['place'], record['end_year']
         return None, None
 
 
     def first_job(self):
         """ Return location + year of first non-postdoc job """
         for record in self.faculty:
-            if record.rank != 'PostDoc':
-                return record.place, record.start_year
+            if record['rank'] != 'PostDoc':
+                return record['place'], record['start_year']
         return None, None
 
 
     def alma_mater(self):
         """ Return location + year of first degree """
         if self.education:
-            return self.education[0].place, self.education[0].end_year
+            return self.education[0]['place'], self.education[0]['end_year']
         return None, None
 
 

@@ -9,17 +9,15 @@ __status__ = "Development"
 
 from university_network.misc.util import add_weighted_edge
 from university_network.parse.faculty_parser import parse_faculty_records
-from university_network.parse.institution_parser import parse_institution_records
 import networkx as nx
 import matplotlib.pyplot as plt
 
 
-def load(institution_fp, faculty_fp):
+def load(faculty_fp):
     """ Create weighted, directed graph where edges (A->B) are the number 
         of PhDs from school A who got their first non-postdoc job at B. 
     """ 
     G = nx.DiGraph()
-    institutions = parse_institution_records(institution_fp)
     add_edges(G, faculty_fp)
     return G
 

@@ -54,16 +54,16 @@ def parse_institution_records(fp):
                 raise ValueError('Records file missing `institution` field!')
             num_fields = len(fields)
             institution_field_ind = fields.index('institution')
-            info_fields = [f for i,f in enumerate(fields) if i != institution_field_ind]
+            info_fields = [f.strip() for i,f in enumerate(fields) if i != institution_field_ind]
             info_fields_ind = [i for i in xrange(num_fields) if i != institution_field_ind]
         else:
             fields = line.strip().split('\t')
             if len(fields) != num_fields:
                 raise ValueError('Missing/extra fields in line: %s' % line)
-            info_values = [custom_cast(fields[i]) for i in info_fields_ind]
-            institution = fields[institution_field_ind]
+            info_values = [custom_cast(fields[i].strip()) for i in info_fields_ind]
+            institution = fields[institution_field_ind].strip()
             institution_record = dict(zip(info_fields, info_values))
-            institutions[institution] = Struct(**institution_record)
+            institutions[institution] = institution_record
 
     return institutions 
 
