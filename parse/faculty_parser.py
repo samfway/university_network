@@ -82,6 +82,9 @@ def finalize_exp_entry(entry):
 
 
 class faculty_record:
+    def __getitem__(self, key):
+        return self.__dict__[key]
+
     def __init__(self, lines):
         self.education = []
         self.faculty = []
@@ -154,6 +157,28 @@ class faculty_record:
         """ Return location + year of first non-postdoc job """
         for record in self.faculty:
             if record['rank'] != 'PostDoc':
+                return record['place'], record['start_year']
+        return None, None
+
+
+    def current_job(self):
+        """ Return location + year of current (non-postdoc) job """
+        place = self['place']
+        current = self['current']
+
+        for record in self.faculty:
+            if record['rank'] != 'PostDoc' and record['place'] == place \
+               and record['rank'] == current:
+                return record['place'], record['start_year']
+        return None, None
+
+
+    def full_professor(self, titles=['Associate Professor', 'Full Professor']):
+        """ Return when & where person got tenure.
+            ASSUMES that faculty positions are listed in order, which
+            may not be the case for some records """ 
+        for record in self.faculty:
+            if record['rank'] in titles:
                 return record['place'], record['start_year']
         return None, None
 
