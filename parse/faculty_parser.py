@@ -77,6 +77,11 @@ def finalize_exp_entry(entry):
             entry['end_year'] = end_year
         except:
             entry['end_year'] = None
+
+    for key in entry:
+        if entry[key] == '.':
+            entry[key] = None
+
     return entry
     #return Struct(**entry)  # convert to object
 
@@ -160,15 +165,40 @@ class faculty_record:
                 return record['place'], record['start_year']
         return None, None
 
+    
+    def first_asst_prof(self):
+        place, year = None, 3000
+        ambig = False
 
-    def current_job(self):
+        for record in self.faculty:
+            if record['rank'] == 'Assistant Professor':
+                if record['start_year'] and record['start_year'] < year:
+                    place = record['place']
+                    year = record['start_year']
+                elif not record['start_year']:
+                    ambig = True
+    
+        if place is not None:
+            return place, year
+        else:
+            if ambig:
+                print 'Missing start year!', self['facultyName'], '(%s)' % self['sex']
+            return None, None
+                    
+
+    def current_job(self, ignore=['PostDoc', 'Emeritus']):
         """ Return location + year of current (non-postdoc) job """
         place = self['place']
         current = self['current']
 
+        if ignore is None:
+            ignore = []
+
+        if current in ignore:
+            return None, None
+
         for record in self.faculty:
-            if record['rank'] != 'PostDoc' and record['place'] == place \
-               and record['rank'] == current:
+            if record['place'] == place and record['rank'] == current:
                 return record['place'], record['start_year']
         return None, None
 

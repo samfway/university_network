@@ -11,6 +11,7 @@ __status__ = "Development"
 
 from university_network.parse.faculty_parser import parse_faculty_records
 from university_network.parse.institution_parser import parse_institution_records
+from university_network.parse.pub_parser import parse_pub_records
 
 from StringIO import StringIO
 from unittest import TestCase, main
@@ -99,35 +100,43 @@ class parsing_tests(TestCase):
         self.assertEqual(first_record.department, 'Information and Computer Science')
         self.assertEqual(first_record.place, 'Arizona State University')
         self.assertEqual(first_record.current, 'Associate Professor')
-        self.assertEqual(first_record.education[0].degree, 'BS')
-        self.assertEqual(first_record.education[0].place, 'Stanford University')
-        self.assertEqual(first_record.education[0].field, 'Computer Science')
-        self.assertEqual(first_record.education[0].years, '????-1994')
-        self.assertEqual(first_record.education[0].start_year, None)
-        self.assertEqual(first_record.education[0].end_year, 1994)
+        self.assertEqual(first_record.education[0]['degree'], 'BS')
+        self.assertEqual(first_record.education[0]['place'], 'Stanford University')
+        self.assertEqual(first_record.education[0]['field'], 'Computer Science')
+        self.assertEqual(first_record.education[0]['years'], '????-1994')
+        self.assertEqual(first_record.education[0]['start_year'], None)
+        self.assertEqual(first_record.education[0]['end_year'], 1994)
         self.assertEqual(len(first_record.education), 2)
         self.assertEqual(len(first_record.faculty), 2)
-        self.assertEqual(first_record.faculty[1].rank, 'Assistant Professor')
-        self.assertEqual(first_record.faculty[1].place, 'MIT')
-        self.assertEqual(first_record.faculty[1].years, '2000-2005')
-        self.assertEqual(first_record.faculty[1].start_year, 2000) 
-        self.assertEqual(first_record.faculty[1].end_year, 2005) 
-        self.assertEqual(first_record.recordDate, '9/29/2011')
+        self.assertEqual(first_record.faculty[1]['rank'], 'Assistant Professor')
+        self.assertEqual(first_record.faculty[1]['place'], 'MIT')
+        self.assertEqual(first_record.faculty[1]['years'], '2000-2005')
+        self.assertEqual(first_record.faculty[1]['start_year'], 2000) 
+        self.assertEqual(first_record.faculty[1]['end_year'], 2005) 
+        self.assertEqual(first_record['recordDate'], '9/29/2011')
 
         second_record = records.next()
         self.assertEqual(len(second_record.education), 1) 
         self.assertEqual(len(second_record.faculty), 2) 
-        self.assertEqual(second_record.education[0].place, 'University of New Mexico') 
-        self.assertEqual(second_record.faculty[1].rank, 'Emeritus') 
+        self.assertEqual(second_record.education[0]['place'], 'University of New Mexico') 
+        self.assertEqual(second_record.faculty[1]['rank'], 'Emeritus') 
 
     def test_uni_parse(self):
         X = get_test_universities()
         institutions = parse_institution_records(X)
-        self.assertEqual(institutions['Yale University'].Region, 'Northeast')
-        self.assertEqual(institutions['Princeton University'].NRC95, 6)
-        self.assertEqual(institutions['Carnegie Mellon University'].USN2010, 1)
-        self.assertEqual(institutions['Harvard University'].pi, 6.12)
-        self.assertEqual(institutions['MIT'].u, 3)
+        self.assertEqual(institutions['Yale University']['Region'], 'Northeast')
+        self.assertEqual(institutions['Princeton University']['NRC95'], 6)
+        self.assertEqual(institutions['Carnegie Mellon University']['USN2010'], 1)
+        self.assertEqual(institutions['Harvard University']['pi'], 6.12)
+        self.assertEqual(institutions['MIT']['u'], 3)
+
+    def test_pub_parse(self):
+        records = parse_pub_records('./pub_test/faclist.txt', './pub_test/')
+        self.assertEqual(records['Per Son'][0]['Title'], 'TESTING_TITLE0')
+        self.assertEqual(records['Per Son'][1]['Title'], 'TESTING_TITLE1')
+        self.assertEqual(records['Per Son'][1]['Citations'], 321)
+        self.assertEqual(len(records['A.A. Ron']), 0)
+    
 
 if __name__ == '__main__':
     main()

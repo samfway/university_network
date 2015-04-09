@@ -33,6 +33,11 @@ def add_edges(G, faculty_fp):
     for rec in parse_faculty_records(faculty_fp):
         phd_loc, phd_year = rec.phd()
         job_loc, job_year = rec.first_job()
+        cur_loc, cur_year = rec.current_job()
+
+        if cur_loc is None:
+            continue  # Make sure they have a valid current job.
+                      # This skips postdocs and emeriti.
 
         if phd_loc is not None and phd_loc != '.' \
            and job_loc is not None and job_loc != '.':
