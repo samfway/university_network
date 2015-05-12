@@ -181,8 +181,8 @@ class faculty_record:
         if place is not None:
             return place, year
         else:
-            if ambig:
-                print 'Missing start year!', self['facultyName'], '(%s)' % self['sex']
+            #if ambig:
+            #    print 'Missing start year!', self['facultyName'], '(%s)' % self['sex']
             return None, None
                     
 

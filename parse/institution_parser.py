@@ -12,6 +12,7 @@ Parsing of university record files.
 """
 
 
+from numpy import inf
 from university_network.misc.util import Struct, custom_cast
 
 
@@ -64,6 +65,17 @@ def parse_institution_records(fp):
             institution = fields[institution_field_ind].strip()
             institution_record = dict(zip(info_fields, info_values))
             institutions[institution] = institution_record
+
+    
+    worst_rank = inf
+    for i in institutions:
+        temp = institutions[i].get('pi', worst_rank)
+        if temp < worst_rank:
+            worst_rank = temp
+
+    # Fill in pi+ 
+    for i in institutions:
+        institutions[i]['pi+'] = institutions[i].get('pi', worst_rank)
 
     return institutions 
 
