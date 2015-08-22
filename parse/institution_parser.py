@@ -11,8 +11,7 @@ __status__ = "Development"
 Parsing of university record files.  
 """
 
-
-from numpy import inf
+import numpy as np
 from university_network.misc.util import Struct, custom_cast
 
 
@@ -67,15 +66,28 @@ def parse_institution_records(fp):
             institutions[institution] = institution_record
 
     
-    worst_rank = inf
+    # Fill in variations on `pi' 
+    ranks = [] 
     for i in institutions:
-        temp = institutions[i].get('pi', worst_rank)
-        if temp < worst_rank:
-            worst_rank = temp
+        temp = institutions[i].get('pi', np.inf)
+        if temp < np.inf:
+            ranks.append(temp)
+    ranks = np.array(ranks)
 
-    # Fill in pi+ 
+    ranks.sort()
+    delta = np.mean(ranks[1:] - ranks[0:-1])
+    worst_ranking = ranks.max()
+    best_ranking = ranks.min()
+    scale = lambda x: 1. - (x-best_ranking)/(worst_ranking-best_ranking+delta)
+
+    ''' VARIATION #1: `pi_inv' - Inverse of the pi ranking. Lower ranks yield larger numbers. ''' 
     for i in institutions:
-        institutions[i]['pi+'] = institutions[i].get('pi', worst_rank)
+        institutions[i]['pi_inv'] = 1. / institutions[i].get('pi', worst_ranking)
+
+    ''' VARIATION #2: `pi_rescaled' - Rescaled such that the best school gets 1.0
+                                      and the rest get some epsilon value. ''' 
+    for i in institutions:
+        institutions[i]['pi_rescaled'] = scale(institutions[i].get('pi', worst_ranking))
 
     return institutions 
 
