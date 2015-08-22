@@ -128,6 +128,8 @@ class parsing_tests(TestCase):
         self.assertEqual(institutions['Princeton University']['NRC95'], 6)
         self.assertEqual(institutions['Carnegie Mellon University']['USN2010'], 1)
         self.assertEqual(institutions['Harvard University']['pi'], 6.12)
+        self.assertEqual(institutions['Harvard University']['pi_inv'], 1./6.12)
+        self.assertEqual(institutions['Stanford University']['pi_rescaled'], 1.)
         self.assertEqual(institutions['MIT']['u'], 3)
 
     def test_pub_parse(self):
