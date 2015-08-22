@@ -83,10 +83,12 @@ def finalize_exp_entry(entry):
             entry[key] = None
 
     return entry
-    #return Struct(**entry)  # convert to object
 
 
 class faculty_record:
+    def __setitem__(self, key, value):
+        self.__dict__[key]= value
+
     def __getitem__(self, key):
         return self.__dict__[key]
 
